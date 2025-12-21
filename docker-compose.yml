@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # 1. MySQL Database Service
   db:
     image: mysql:8.0
     restart: always
@@ -13,9 +12,8 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - db_data:/var/lib/mysql # Persist data even if container stops
+      - db_data:/var/lib/mysql
 
-  # 2. Database Interface (phpMyAdmin)
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     restart: always
@@ -26,9 +24,8 @@ services:
     ports:
       - "8080:80"
     environment:
-      PMA_HOST: db # Must match the service name above ('db')
+      PMA_HOST: db
 
-  # 3. Your Node.js Application
   app:
     build: .
     ports:
@@ -36,12 +33,12 @@ services:
     depends_on:
       - db
     environment:
-      DB_HOST: db # Crucial: In Docker, the host is the service name, not 'localhost'
+      DB_HOST: db
       DB_USER: user
       DB_PASSWORD: password
       DB_NAME: my_database
     volumes:
-      - .:/usr/src/ # Syncs your local code changes to the container instantly
+      - .:/usr/src/
       - /usr/src/app/node_modules
 
 volumes:
