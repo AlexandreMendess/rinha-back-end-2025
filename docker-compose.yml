@@ -5,14 +5,18 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: my_database
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: mysecret
+      MYSQL_DATABASE: db_payments
+      MYSQL_USER: alemendes
+      MYSQL_PASSWORD: secret
     ports:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -31,14 +35,15 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       DB_HOST: db
-      DB_USER: user
-      DB_PASSWORD: password
-      DB_NAME: my_database
+      DB_USER: alemendes
+      DB_PASSWORD: secret
+      DB_NAME: db_payments
     volumes:
-      - .:/usr/src/
+      - .:/usr/src/app
       - /usr/src/app/node_modules
 
 volumes:
